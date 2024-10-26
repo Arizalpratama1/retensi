@@ -40,6 +40,9 @@ class RmController extends Controller
      */
     public function store(Request $request)
     {
+        // $validated = $request->validate([
+        //     'rekam_medis.rm' => 'required|unique:rm|max:255',
+        // ]);
         try {
             $rm = new RekamMedis();
             $rm->rm = $request->rm; 
@@ -59,7 +62,7 @@ class RmController extends Controller
                 $file = $request->file('file_rm');
                 $originalName1 = $rm->rm . '-' . $file->getClientOriginalName();
                 $file_rm = $originalName1;
-                $file->move('uploads/file/rm/'. $rm->rm, $file_rm);
+                $file->move('uploads/rm/'. $rm->rm, $file_rm);
             }
             $retensi->nama_file = $file_rm;
 
@@ -112,11 +115,19 @@ class RmController extends Controller
             //     $retensi->save();  
             // }
 
-            toast('Berhasil Menambahkan Data', 'success');
-            return redirect('/admin/rm');
+            $notification = array(
+                'message' => 'Berhasil Menambah Data',
+                'alert-type' => 'success'
+            );
+            // toast('Berhasil Menambahkan Data', 'success');
+            return redirect('/admin/rm')->with($notification);
         } catch (\Throwable $th) {
-            toast('Terjadi kesalahan pada inputan, mohon diperiksa ulang!','error');
-            return back();
+            //$validated->validate();
+            $notification = array(
+                'message' => 'Terjadi kesalahan pada inputan, mohon diperiksa ulang!',
+                'alert-type' => 'error'
+            );
+           return  redirect()->back()->withInput()->withErrors($notification);
         }
     }
 
@@ -128,7 +139,12 @@ class RmController extends Controller
      */
     public function show($id)
     {
-        //
+        $rm = RekamMedis::find($id);
+        // $retensi = Retensi::where('rekam_medis_id', $id)->get();
+        
+        return view('rm-library.show', compact(
+            'rm'
+        ));
     }
 
     /**
@@ -139,7 +155,11 @@ class RmController extends Controller
      */
     public function edit($id)
     {
-        //
+        $rm = RekamMedis::find($id);
+
+        return view('rm-library.edit', compact(
+            'rm'
+        ));
     }
 
     /**
@@ -151,7 +171,28 @@ class RmController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $rm = RekamMedis::find($id);
+            $rm->rm = $request->rm; 
+            $rm->nama = $request->nama; 
+            $rm->tahun = $request->tahun; 
+            $rm->jenis_kelamin = $request->jenis_kelamin;
+            $rm->save();
+
+            $notification = array(
+                'message' => 'Berhasil Mengubah Data',
+                'alert-type' => 'success'
+            );
+            // toast('Berhasil Menambahkan Data', 'success');
+            return redirect('/admin/rm')->with($notification);
+        } catch (\Throwable $th) {
+            $notification = array(
+                'message' => 'Terjadi kesalahan pada inputan, mohon diperiksa ulang!',
+                'alert-type' => 'error'
+            );
+            // toast('Terjadi kesalahan pada inputan, mohon diperiksa ulang!','error');
+            return back()->with($notification);
+        }
     }
 
     /**
@@ -162,6 +203,110 @@ class RmController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $rm = RekamMedis::find($id);
+            $retensi = $rm->retensis()->get();
+
+            foreach($retensi as $rt){
+                //$folder = url('uploads/rm/'. $rm->rm.'/'.$rt->nama_file);
+                File::delete('uploads/rm/'. $rm->rm.'/'.$rt->nama_file);
+            }
+            // foreach($retensi as $rt){
+            //     $folder = url('uploads/rm/'. $rm->rm.'/'.$rt->nama_file);
+            //     File::delete($folder);
+            // }
+
+            foreach($rm->retensis() as $rte){
+                $rte->delete();
+            }
+
+            $rm->delete();
+
+            $notification = array(
+                'message' => 'Berhasil Mengubah Data',
+                'alert-type' => 'success'
+            );
+            // toast('Berhasil Menambahkan Data', 'success');
+            return redirect('/admin/rm')->with($notification);
+        } catch (\Throwable $th) {
+            //throw $th;
+            $notification = array(
+                'message' => 'Terjadi kesalahan pada inputan, mohon diperiksa ulang!',
+                'alert-type' => 'error'
+            );
+            // toast('Terjadi kesalahan pada inputan, mohon diperiksa ulang!','error');
+            return back()->with($notification);
+        }
+    }
+
+    public function index_file(int $rm_id){
+        $rm = RekamMedis::findOrFail($rm_id);
+
+        return view('rm-library.file',compact(
+            'rm'
+        ));
+    }
+
+    public function store_file(Request $request,int $rm_id){
+        
+        try {
+            $rm = RekamMedis::findOrFail($rm_id);
+
+            $retensi = new Retensi();
+            $retensi->rekam_medis_id = $rm->id;
+            $file_rm = '';
+            if ($request->hasFile('file_rm')) {
+                $file = $request->file('file_rm');
+                $originalName1 = $rm->rm . '-' . $file->getClientOriginalName();
+                $file_rm = $originalName1;
+                $file->move('uploads/rm/'. $rm->rm, $file_rm);
+            }
+            $retensi->nama_file = $file_rm;
+
+            $retensi->save();
+
+            $notification = array(
+                'message' => 'Berhasil Menambah Data',
+                'alert-type' => 'success'
+            );
+
+            return back()->with($notification);
+        } catch (\Throwable $th) {
+            //throw $th;
+            $notification = array(
+                'message' => 'Terjadi kesalahan pada inputan, mohon diperiksa ulang!',
+                'alert-type' => 'error'
+            );
+            return back()->with($notification);
+        }
+    }
+
+    public function delete_file(int $rm_id, int $retensi_id){
+        try {
+            $retensi = Retensi::findOrFail($retensi_id);
+            // $relasi = $retensi->rekam_medis_id;
+            //dd($dor);
+            $rm = RekamMedis::findOrFail($rm_id);
+            // dd($rm);
+
+            if (!empty($retensi->nama_file)) {
+                File::delete('uploads/rm/'. $rm->rm .'/'. $retensi->nama_file);
+            }
+
+            $retensi->delete();
+
+            $notification = array(
+                'message' => 'Berhasil Menghapus Data',
+                'alert-type' => 'success'
+            );
+
+            return back()->with($notification);
+        } catch (\Throwable $th) {
+            $notification = array(
+                'message' => 'Terjadi kesalahan pada inputan, mohon diperiksa ulang!',
+                'alert-type' => 'error'
+            );
+            return back()->with($notification);
+        }
     }
 }

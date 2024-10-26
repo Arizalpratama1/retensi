@@ -40,8 +40,9 @@
                                     <th style="width:1%">Nomor RM</th>
                                     <th style="width:1%">Nama</th>
                                     <th style="width:1%">Tahun</th>
-                                    <th style="width:1%">Jenis Kelamin</th>
-                                    <th scope="col">Alamat</th>
+                                    <th scope="col">Jenis Kelamin</th>
+                                    <th style="width:1%">Manage File</th>
+                                    <!-- <th scope="col">Alamat</th> -->
                                     <th style="width:10%">Aksi</th>
                                 </tr>
                             </thead>
@@ -53,14 +54,21 @@
                                         <td>{{ $Rm->nama }}</td>
                                         <td>{{ $Rm->tahun }}</td>
                                         <td>{{ $Rm->jenis_kelamin }}</td>
-                                        <td>{!! Str::limit($Rm->alamat, 25) !!}</td>
                                         <td>
-                                            <a href="/admin/artikel/{{ $Rm->id }}"
+                                        <a href="/admin/rm/upload/{{ $Rm->id }}"
+                                                class="badge badge-light-secondary">
+                                                <i class="fas fa-solid fa-eye"></i>
+                                                Add / Delete File
+                                            </a>
+                                        </td>
+                                        <!-- <td>{!! Str::limit($Rm->alamat, 25) !!}</td> -->
+                                        <td>
+                                            <a href="/admin/rm/{{ $Rm->id }}"
                                                 class="badge badge-light-secondary">
                                                 <i class="fas fa-solid fa-eye"></i>
                                                 Lihat
                                             </a>
-                                            <a href="{{ url('/admin/artikel/' . $Rm->id) }}/edit"
+                                            <a href="{{ url('/admin/rm/' . $Rm->id) }}/edit"
                                                 class="badge badge-light-secondary">
                                                 <i class="fas fa-edit"></i>
                                                 Ubah

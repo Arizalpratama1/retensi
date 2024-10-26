@@ -22,6 +22,7 @@
         <link rel="stylesheet" href="{{ asset('argon') }}/css/datatables.min.css" type="text/css">
         <link type="text/css" href="{{ asset('argon') }}/css/argon.css?v=1.0.0" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" rel="stylesheet">
     </head>
     <!-- <body class="{{ $class ?? '' }}"> -->
     <body>
@@ -46,6 +47,45 @@
         <script src="{{ asset('vendor') }}/sweetalert/sweetalert.all.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="https://cdn.ckeditor.com/ckeditor5/35.1.0/classic/ckeditor.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+        <script>
+            @if (Session::has('message'))
+                var type = "{{ Session::get('alert-type', 'info') }}"
+                switch (type) {
+                    case 'info':
+
+                        toastr.options.timeOut = 10000;
+                        toastr.info("{{ Session::get('message') }}");
+                        var audio = new Audio('audio.mp3');
+                        audio.play();
+                        break;
+                    case 'success':
+
+                        toastr.options.timeOut = 10000;
+                        toastr.success("{{ Session::get('message') }}");
+                        var audio = new Audio('audio.mp3');
+                        audio.play();
+
+                        break;
+                    case 'warning':
+
+                        toastr.options.timeOut = 10000;
+                        toastr.warning("{{ Session::get('message') }}");
+                        var audio = new Audio('audio.mp3');
+                        audio.play();
+
+                        break;
+                    case 'error':
+
+                        toastr.options.timeOut = 10000;
+                        toastr.error("{{ Session::get('message') }}");
+                        var audio = new Audio('audio.mp3');
+                        audio.play();
+
+                        break;
+                }
+            @endif
+        </script>
        
         @yield('script')
     </body>

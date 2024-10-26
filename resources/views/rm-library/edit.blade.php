@@ -16,7 +16,7 @@
                                 </ul>
                             </div>
                         @endif
-                        <h6 class="h2 text-white d-inline-block mb-0">Tambah Retensi</h6>
+                        <h6 class="h2 text-white d-inline-block mb-0">Detail Retensi</h6>
                     </div>
                 </div>
             </div>
@@ -24,8 +24,9 @@
     </div>
     <!-- Page content -->
     <div class="container-fluid mt--6">
-    <form action="{{ url('/admin/rm') }}" enctype="multipart/form-data" method="POST">
+    <form action="{{ url('/admin/rm/'. $rm->id) }}" enctype="multipart/form-data" method="POST">
     @csrf
+    @method('PUT')
         <div class="row">
             <div class="col-xl-6">
                 <div class="card">
@@ -39,21 +40,22 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="">Nomor RM <span class="text-red">*</span></label>
-                            <input type="text" name="rm" placeholder="076654" class="form-control" required>
+                            <input type="text" name="rm" placeholder="076654" class="form-control" value="{{ $rm->rm }}" required>
                         </div>
                         <div class="form-group">
                             <label for="">Nama Lengkap <span class="text-red">*</span></label>
-                            <input type="text" name="nama" placeholder="Arizal Pratama" class="form-control" required>
+                            <input type="text" name="nama" placeholder="Arizal Pratama" class="form-control" value="{{ $rm->nama }}" required>
                         </div>
                         <div class="form-group">
                             <label for="">Tahun <span class="text-red">*</span></label>
-                            <input type="text" name="tahun" placeholder="2019" class="form-control" required>
+                            <input type="text" name="tahun" placeholder="2019" class="form-control" value="{{ $rm->tahun }}" required>
                         </div>
                         <div class="form-group">
-                            <label for="">Jenis Kelamin <span class="text-red">*</span></label><select class="form-control js-example-basic-single" name="jenis_kelamin" required>
-                                <option value="">-- Pilih Jenis Kelamin --</option>
-                                <option value="Laki - Laki">Laki - Laki</option>
-                                <option value="Perempuan">Perempuan</option>
+                            <label for="">Jenis Kelamin <span class="text-red">*</span></label>
+                            <select class="form-control" name="jenis_kelamin" value="" required>
+                            <option value="">-- Pilih Jenis Kelamin --</option>
+                                <option value="Laki - Laki" {{ $rm->jenis_kelamin == "Laki - Laki" ? 'selected' : ''}}>Laki - Laki</option>
+                                <option value="Perempuan" {{ $rm->jenis_kelamin == "Perempuan" ? 'selected' : ''}}>Perempuan</option>
                             </select> 
                         </div>
                         <!-- <div class="form-group">
@@ -77,11 +79,22 @@
                     <div class="card">
                         <div class="card-body">
                             <label >Detail File</label>
-                            <div class="input-group mb-3">
-                                <input type="file" accept="application/pdf" class="form-control" name="file_rm" aria-label="File" aria-describedby="button-addon2">
-                                <!-- <button class="btn btn-outline-primary add_detail" type="button" id="button-addon2">Tambah</button> -->
-                            </div>
-                            <!-- <div id="extra-detail"></div> -->
+                            <table class="table-kontrak table table-responsive align-items-center table-flush datatable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>File</th>
+                                        <!-- <th>Hapus</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($rm->retensis as $file)
+                                    <tr>
+                                        <td><a href="{{ url('uploads/rm/'. $rm->rm.'/'.$file->nama_file) }}" target="_blank">{{ $file->nama_file }}</a></td>
+                                        <!-- <td><a href="{{ url('uploads/rm/'. $rm->rm.'/'.$file->nama_file) }}" class="btn btn-outline-warning float-right"><i class="fas fa-edit"></i>&nbsp Hapus File</a></td> -->
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -95,7 +108,9 @@
                 <div class="card-body">
                     <!-- <button class="btn btn-outline-secondary" name="lagi" type="submit">Simpan & Baru</button> -->
                     <button class="btn btn-outline-primary float-right" type="submit"><i class="fa fa-save"></i>&nbsp Simpan</button>
-                    <a href="{{ url('/admin/rm') }}" class="btn btn-outline-danger float-right"><i class="fas fa-backward"></i>&nbsp Batal</a>
+                    <a href="{{ url('/admin/rm') }}" class="btn btn-outline-danger float-right"><i class="fas fa-backward"></i>&nbsp Kembali</a>
+                    <!-- <a href="{{ url('/admin/rm') }}" class="btn btn-outline-warning float-right"><i class="fas fa-edit"></i>&nbsp Edit File</a>
+                    <a href="{{ url('/admin/rm') }}" class="btn btn-outline-warning float-right"><i class="fas fa-edit"></i>&nbsp Edit Retensi</a> -->
                 </div>
             </div>
         </div>

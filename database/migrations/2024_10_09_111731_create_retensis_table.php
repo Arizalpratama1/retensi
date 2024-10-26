@@ -15,7 +15,8 @@ class CreateRetensisTable extends Migration
     {
         Schema::create('retensis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rekam_medis_id')->constrained('rekam_medis');
+            $table->bigInteger('rekam_medis_id')->unsigned();
+            $table->foreign('rekam_medis_id')->references('id')->on('rekam_medis')->onDelete('cascade');
             $table->string('nama_file');
             $table->timestamps();
         });

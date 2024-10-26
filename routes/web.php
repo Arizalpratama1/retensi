@@ -23,5 +23,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     Route::resource('/admin/rm', RmController::class);
+
+    Route::get('/admin/rm/upload/{rm_id}', [App\Http\Controllers\RmController::class, 'index_file']);
+
+    Route::post('/admin/rm/upload/{rm_id}', [App\Http\Controllers\RmController::class, 'store_file']);
+
+    Route::post('/admin/rm/delete/{rm_id}/{retensi_id}', [App\Http\Controllers\RmController::class, 'delete_file']);
 });
 
